@@ -9,17 +9,14 @@ export const register = (email, password) => {
       body: JSON.stringify({ email, password })
     })
     .then((response) => {
-      if(response.status === 400){
-        throw new Error('Что-то пошло не так! Попробуйте ещё раз.');
+      if(response.status === 400 || !response.ok){
+        return Promise.reject(`Что-то пошло не так!`);
       }else{
         return response.json();
       }
     })
     .then((res) => {
       return res;
-    })
-    .catch(err => {
-      return {error: err.message};
     });
 }
 
@@ -32,17 +29,14 @@ export const login = (email, password) => {
     body: JSON.stringify({ email, password })
   })
   .then((response) => {
-    if(response.status === 400 || response.status === 401){
-      throw new Error('Что-то пошло не так! Попробуйте ещё раз.');
+    if(response.status === 400 || response.status === 401 || !response.ok){
+      return Promise.reject(`Что-то пошло не так! Попробуйте ещё раз.: ${response.status} ${response.statusText}`);
     }else{
       return response.json();
     }
   })
   .then((res) => {
     return res;
-  })
-  .catch(err => {
-    console.log(err);
   });
 }
 
@@ -55,9 +49,11 @@ export const checkToken = (token) => {
       'Authorization': `Bearer ${token}`,
     }
   })
-  .then(res => res.json())
-  .then(data => data)
-  .catch(err => {
-    console.log(err);
-  });
+  .then(res => {
+    if(res.ok) {
+      return res.json();
+    }
+    return Promise.reject(`Что-то пошло не так! Попробуйте ещё раз.: ${res.status} ${res.statusText}`);
+  })
+  .then(data => data);
 }

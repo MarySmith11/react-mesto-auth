@@ -172,18 +172,17 @@ function App() {
       return;
     }
     auth.register(email, password)
-      .then(data => {
-        setRegisterSuccessfully(!data.error);
-        if (!data.error) {
-          setRegisterMessage('Вы успешно зарегистрировались!');
-        } else {
-          setRegisterMessage(data.error);
-        }
-        setIsInfoToolTipOpened(true)
+      .then(() => {
+        setRegisterSuccessfully(true);
+        setRegisterMessage('Вы успешно зарегистрировались!');
       })
       .catch(err => {
-        console.log(err);
-      });
+        setRegisterSuccessfully(false);
+        setRegisterMessage(err);
+      })
+      .finally(() => {
+        setIsInfoToolTipOpened(true);
+      })
   }
 
   function handleLogout() { 
